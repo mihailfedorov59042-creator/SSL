@@ -35,9 +35,10 @@ self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(cacheName);
     const active = await cache.match(index);
+    // Refresh manifest/icons even when the saved study page is already present.
+    await cache.addAll(appAssets.map(url => new Request(url, { cache: 'reload' })));
     if (active) return;
     const page = await downloadIndex();
-    await cache.addAll(appAssets.map(url => new Request(url, { cache: 'reload' })));
     await cache.put(index, page);
   })());
 });
